@@ -1,0 +1,36 @@
+version: "2"
+
+services:
+  mysql:
+    container_name: mysqldbserver
+       build:
+         context: .
+         dockerfile: docker/mysql/DockerFile
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "192.168.174.128:3308:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=000000
+    restart: always
+
+
+  springappserver:
+        container_name: springappexam3
+        build:
+          context: .
+          dockerfile: start.sh
+        ports:
+          - "9095:8080"
+        networks:
+          - net-spring-db
+        volumes:
+          - /vol/development
+        depends_on:
+          - mysqldbserver
+        links:
+          - mysqldbserver
+
+    networks:
+      net-spring-db:
+        driver: bridge
